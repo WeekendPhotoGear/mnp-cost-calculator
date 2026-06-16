@@ -32,6 +32,33 @@ plain static files, no account, and no server-side data collection.
 - Works as a static site by opening `index.html`.
 - Includes dependency-free calculation tests and a GitHub Actions check.
 
+## Japanese
+
+MNP Cost Calculator is built for people in Japan who want to compare mobile
+carrier switching costs without sending their estimates to a service.
+
+The tool compares total cost and effective monthly cost across 12, 24, 36, and
+48 months by using monthly plan fees, temporary discounts, device payments,
+device discounts, initial fees, points, cashback, and expected trade-in or resale
+value.
+
+Estimate data is stored only in the current browser with `localStorage`. The app
+does not use login, server-side storage, analytics tags, advertising tags, or
+external APIs. Saved estimates can be exported as JSON or CSV.
+
+### 日本語概要
+
+MNP Cost Calculator（MNP総額電卓）は、日本のMNP・回線乗り換え費用を
+ブラウザ内だけで比較するローカルファーストなオープンソースツールです。
+
+月額料金、月額割引、端末代、端末割引、初期費用、ポイント還元、
+下取り・売却見込みを入力すると、12・24・36・48か月の総額と
+実質月額を比較できます。
+
+データは現在のブラウザの `localStorage` にのみ保存されます。ログイン、
+サーバー保存、分析タグ、広告タグ、外部APIは使っていません。保存した
+見積もりはJSONまたはCSVで書き出せます。
+
 ## Development
 
 No build step is required.
