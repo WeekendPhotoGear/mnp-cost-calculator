@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="MNP and mobile plan total cost calculator that stores estimates only in your browser."
+    />
+    <title>MNP Cost Calculator</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Local-first estimate tool</p>
+        <h1>MNP総額電卓</h1>
+      </div>
+      <div class="storage-badge" title="Saved with localStorage only">
+        ブラウザ内保存
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="editor-panel" aria-labelledby="editor-title">
+        <div class="panel-heading">
+          <h2 id="editor-title">見積もり</h2>
+          <button class="ghost-button" type="button" id="resetFormButton">
+            新規
+          </button>
+        </div>
+
+        <form id="estimateForm" autocomplete="off">
+          <input type="hidden" id="estimateId" />
+
+          <div class="field-grid">
+            <label>
+              <span>案名</span>
+              <input
+                id="estimateName"
+                type="text"
+                maxlength="48"
+                placeholder="A社 20GB 乗り換え"
+                required
+              />
+            </label>
+
+            <label>
+              <span>比較月数</span>
+              <select id="periodMonths">
+                <option value="24">24か月</option>
+                <option value="36">36か月</option>
+                <option value="12">12か月</option>
+                <option value="48">48か月</option>
+              </select>
+            </label>
+
+            <label>
+              <span>月額料金</span>
+              <input id="monthlyFee" type="number" min="0" step="1" value="2970" />
+            </label>
+
+            <label>
+              <span>月額割引</span>
+              <input id="monthlyDiscount" type="number" min="0" step="1" value="0" />
+            </label>
+
+            <label>
+              <span>端末代</span>
+              <input id="devicePrice" type="number" min="0" step="1" value="0" />
+            </label>
+
+            <label>
+              <span>端末割引</span>
+              <input id="deviceDiscount" type="number" min="0" step="1" value="0" />
+            </label>
+
+            <label>
+              <span>初期費用</span>
+              <input id="initialFees" type="number" min="0" step="1" value="3850" />
+            </label>
+
+            <label>
+              <span>解約・転出費用</span>
+              <input id="exitFees" type="number" min="0" step="1" value="0" />
+            </label>
+
+            <label>
+              <span>ポイント還元</span>
+              <input id="cashback" type="number" min="0" step="1" value="0" />
+            </label>
+
+            <label>
+              <span>下取り・売却見込み</span>
+              <input id="tradeIn" type="number" min="0" step="1" value="0" />
+            </label>
+          </div>
+
+          <label class="wide-field">
+            <span>メモ</span>
+            <textarea
+              id="notes"
+              maxlength="240"
+              rows="3"
+              placeholder="キャンペーン期限、家族割、注意点など"
+            ></textarea>
+          </label>
+
+          <div class="live-result" aria-live="polite">
+            <div>
+              <span>総額</span>
+              <strong id="previewTotal">¥0</strong>
+            </div>
+            <div>
+              <span>実質月額</span>
+              <strong id="previewMonthly">¥0</strong>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="primary-button" type="submit">保存</button>
+            <button class="secondary-button" type="button" id="duplicateButton">
+              複製
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="results-panel" aria-labelledby="results-title">
+        <div class="panel-heading">
+          <div>
+            <h2 id="results-title">比較</h2>
+            <p id="summaryText" class="muted">保存された案はまだありません。</p>
+          </div>
+          <div class="toolbar">
+            <button class="ghost-button" type="button" id="exportButton">書き出し</button>
+            <label class="ghost-button file-button">
+              読み込み
+              <input id="importInput" type="file" accept="application/json" />
+            </label>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>案</th>
+                <th>月数</th>
+                <th>総額</th>
+                <th>実質月額</th>
+                <th>差額</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="estimateRows"></tbody>
+          </table>
+        </div>
+
+        <div id="emptyState" class="empty-state">
+          <h3>比較したい案を保存</h3>
+          <p>端末代、割引、ポイント還元を入れると、期間内の実質総額で並べられます。</p>
+        </div>
+
+        <div class="danger-zone">
+          <button class="text-button" type="button" id="clearButton">
+            保存データを削除
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
