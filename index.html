@@ -152,7 +152,22 @@
             <p id="summaryText" class="muted">No saved estimates yet.</p>
           </div>
           <div class="toolbar">
-            <button class="ghost-button" type="button" id="exportButton" data-i18n="exportButton">Export</button>
+            <button
+              class="ghost-button"
+              type="button"
+              id="exportJsonButton"
+              data-i18n="exportJsonButton"
+            >
+              Export JSON
+            </button>
+            <button
+              class="ghost-button"
+              type="button"
+              id="exportCsvButton"
+              data-i18n="exportCsvButton"
+            >
+              Export CSV
+            </button>
             <label class="ghost-button file-button">
               <span data-i18n="importButton">Import</span>
               <input id="importInput" type="file" accept="application/json" />
@@ -162,14 +177,17 @@
 
         <div class="table-wrap">
           <table>
+            <caption class="sr-only" data-i18n="tableCaption">
+              Saved estimates ranked by total cost
+            </caption>
             <thead>
               <tr>
-                <th data-i18n="tablePlan">Plan</th>
-                <th data-i18n="tablePeriod">Period</th>
-                <th data-i18n="tableTotal">Total</th>
-                <th data-i18n="tableMonthly">Effective monthly</th>
-                <th data-i18n="tableDifference">Difference</th>
-                <th></th>
+                <th scope="col" data-i18n="tablePlan">Plan</th>
+                <th scope="col" data-i18n="tablePeriod">Period</th>
+                <th scope="col" data-i18n="tableTotal">Total</th>
+                <th scope="col" data-i18n="tableMonthly">Effective monthly</th>
+                <th scope="col" data-i18n="tableDifference">Difference</th>
+                <th scope="col"><span class="sr-only">Actions</span></th>
               </tr>
             </thead>
             <tbody id="estimateRows"></tbody>
@@ -189,6 +207,7 @@
       </section>
     </main>
 
+    <script src="./calculator.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

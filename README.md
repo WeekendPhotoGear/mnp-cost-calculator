@@ -28,8 +28,9 @@ plain static files, no account, and no server-side data collection.
 - Include monthly fees, monthly discounts, device costs, fees, points, and trade-in.
 - Save multiple estimates in the browser.
 - Switch between English and Japanese UI.
-- Export and import estimates as JSON.
+- Export estimates as JSON or CSV, and import estimates as JSON.
 - Works as a static site by opening `index.html`.
+- Includes dependency-free calculation tests and a GitHub Actions check.
 
 ## Development
 
@@ -40,6 +41,13 @@ python3 -m http.server 8765
 ```
 
 Then open <http://127.0.0.1:8765/>.
+
+Run checks:
+
+```bash
+npm test
+npm run check
+```
 
 ## Privacy
 

@@ -6,22 +6,22 @@ Use this as the basis for the Codex for Open Source form.
 
 ### Describe your role
 
-Primary maintainer. I own the repository, maintain the GitHub Pages deployment,
-review and merge changes, manage issues/releases, and keep the project
-local-first, dependency-free, and privacy-conscious.
+Primary maintainer. I own the repository and GitHub Pages deployment, review and
+merge PRs, manage issues/releases, and keep the project local-first,
+dependency-free, tested, and privacy-conscious.
 
 ### Why does this repository qualify?
 
 MNP Cost Calculator is an active public OSS tool for comparing Japanese mobile
-plan switching costs. It is early, but already usable, released on GitHub Pages,
-documented with privacy/security notes, and maintained through issues, PRs, and
-releases. It fills a transparent local-first alternative to opaque calculators.
+plan switching costs. It is early, but usable on GitHub Pages, released with
+v0.1.x tags, tested in CI, documented with privacy/security notes, and maintained
+through PRs, issues, and releases as a transparent local-first alternative.
 
 ### How will you use API credits for your project?
 
 I will use Codex/API credits for maintainer workflows: PR review, accessibility
 checks, release-note drafting, import/export test generation, documentation
-maintenance, and privacy/security review while keeping the static site
+maintenance, and privacy/security review while keeping the static site small and
 dependency-free.
 
 ### Anything else we should know?
