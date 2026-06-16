@@ -1,11 +1,16 @@
 # Roadmap
 
+## Completed
+
+- v0.1.1: Add calculation tests for the core total-cost formula.
+- v0.1.1: Add CSV export.
+- v0.1.1: Add GitHub Actions static checks.
+- v0.1.1: Add initial keyboard and screen-reader table affordances.
+
 ## Near term
 
-- Add calculation tests for the core total-cost formula.
-- Add CSV export.
 - Add preset rows for common Japanese mobile plan comparison cases.
-- Improve keyboard and screen-reader affordances.
+Continue improving keyboard and screen-reader affordances.
 - Add optional memo templates for campaign deadlines and caveats.
 
 ## Later

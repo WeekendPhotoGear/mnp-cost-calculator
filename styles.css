@@ -247,6 +247,12 @@ button,
   font-weight: 800;
 }
 
+button:focus-visible,
+.file-button:focus-within {
+  outline: 3px solid rgba(23, 107, 95, 0.3);
+  outline-offset: 2px;
+}
+
 .primary-button {
   background: var(--accent);
   color: #fff;
@@ -292,6 +298,18 @@ button,
   background: transparent;
   color: var(--warn);
   padding: 4px 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .table-wrap {

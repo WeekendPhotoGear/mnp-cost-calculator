@@ -33,8 +33,10 @@ const translations = {
     saveButton: "Save",
     duplicateButton: "Duplicate",
     resultsTitle: "Comparison",
-    exportButton: "Export",
+    exportJsonButton: "Export JSON",
+    exportCsvButton: "Export CSV",
     importButton: "Import",
+    tableCaption: "Saved estimates ranked by total cost",
     tablePlan: "Plan",
     tablePeriod: "Period",
     tableTotal: "Total",
@@ -87,8 +89,10 @@ const translations = {
     saveButton: "保存",
     duplicateButton: "複製",
     resultsTitle: "比較",
-    exportButton: "書き出し",
+    exportJsonButton: "JSON書き出し",
+    exportCsvButton: "CSV書き出し",
     importButton: "読み込み",
+    tableCaption: "総額が安い順に並んだ保存済み見積もり",
     tablePlan: "案",
     tablePeriod: "月数",
     tableTotal: "総額",
@@ -135,10 +139,12 @@ const previewTotal = document.querySelector("#previewTotal");
 const previewMonthly = document.querySelector("#previewMonthly");
 const resetFormButton = document.querySelector("#resetFormButton");
 const duplicateButton = document.querySelector("#duplicateButton");
-const exportButton = document.querySelector("#exportButton");
+const exportJsonButton = document.querySelector("#exportJsonButton");
+const exportCsvButton = document.querySelector("#exportCsvButton");
 const importInput = document.querySelector("#importInput");
 const clearButton = document.querySelector("#clearButton");
 const languageButtons = document.querySelectorAll("[data-language-button]");
+const calculator = globalThis.MnpCalculator;
 
 let estimates = loadEstimates();
 let currentLanguage = loadLanguage();
@@ -162,36 +168,6 @@ function newId() {
   return `estimate-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function cleanText(value, maxLength) {
-  return typeof value === "string" ? value.slice(0, maxLength).trim() : "";
-}
-
-function cleanNumber(value) {
-  const number = Number(value);
-  return Number.isFinite(number) ? Math.max(0, number) : 0;
-}
-
-function normalizeEstimate(item) {
-  const defaults = readFormDefaults();
-  const periodMonths = cleanNumber(item.periodMonths);
-  return {
-    ...defaults,
-    id: cleanText(item.id, 120) || newId(),
-    name: cleanText(item.name, 48),
-    periodMonths: [12, 24, 36, 48].includes(periodMonths) ? periodMonths : 24,
-    monthlyFee: cleanNumber(item.monthlyFee),
-    monthlyDiscount: cleanNumber(item.monthlyDiscount),
-    devicePrice: cleanNumber(item.devicePrice),
-    deviceDiscount: cleanNumber(item.deviceDiscount),
-    initialFees: cleanNumber(item.initialFees),
-    exitFees: cleanNumber(item.exitFees),
-    cashback: cleanNumber(item.cashback),
-    tradeIn: cleanNumber(item.tradeIn),
-    notes: cleanText(item.notes, 240),
-    updatedAt: new Date().toISOString(),
-  };
-}
-
 function readForm() {
   return {
     id: fields.id.value || newId(),
@@ -211,20 +187,7 @@ function readForm() {
 }
 
 function calculate(estimate) {
-  const months = Math.max(1, estimate.periodMonths || 1);
-  const monthlyNet = Math.max(0, estimate.monthlyFee - estimate.monthlyDiscount);
-  const recurringTotal = monthlyNet * months;
-  const oneTimeTotal =
-    estimate.devicePrice + estimate.initialFees + estimate.exitFees;
-  const discountTotal =
-    estimate.deviceDiscount + estimate.cashback + estimate.tradeIn;
-  const total = Math.max(0, recurringTotal + oneTimeTotal - discountTotal);
-
-  return {
-    months,
-    total,
-    effectiveMonthly: total / months,
-  };
+  return calculator.calculate(estimate);
 }
 
 function loadEstimates() {
@@ -412,22 +375,36 @@ estimateRows.addEventListener("click", (event) => {
   }
 });
 
-exportButton.addEventListener("click", () => {
+function downloadFile(filename, type, contents) {
+  const blob = new Blob([contents], { type });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+exportJsonButton.addEventListener("click", () => {
   const payload = {
     app: "mnp-cost-calculator",
     version: 1,
     exportedAt: new Date().toISOString(),
     estimates,
   };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {
-    type: "application/json",
-  });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = "mnp-cost-calculator.json";
-  anchor.click();
-  URL.revokeObjectURL(url);
+  downloadFile(
+    "mnp-cost-calculator.json",
+    "application/json",
+    JSON.stringify(payload, null, 2)
+  );
+});
+
+exportCsvButton.addEventListener("click", () => {
+  downloadFile(
+    "mnp-cost-calculator.csv",
+    "text/csv;charset=utf-8",
+    calculator.toCsv(estimates)
+  );
 });
 
 importInput.addEventListener("change", async () => {
@@ -448,7 +425,7 @@ importInput.addEventListener("change", async () => {
 
   estimates = imported
     .filter((item) => item && typeof item.name === "string")
-    .map(normalizeEstimate);
+    .map((item) => calculator.normalizeEstimate(item, newId));
   saveEstimates();
   render();
 });

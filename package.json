@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "check": "node --check calculator.js && node --check app.js && node --check tests/calculator.test.js",
+    "test": "node tests/calculator.test.js"
+  }
+}
