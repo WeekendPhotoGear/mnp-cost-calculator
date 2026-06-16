@@ -1,4 +1,116 @@
 const STORAGE_KEY = "mnp-cost-calculator.estimates.v1";
+const LANGUAGE_KEY = "mnp-cost-calculator.language.v1";
+
+const translations = {
+  en: {
+    pageTitle: "MNP Cost Calculator",
+    pageDescription:
+      "A local-first calculator for comparing Japanese mobile plan switching costs.",
+    eyebrow: "Local-first estimate tool",
+    appTitle: "MNP Cost Calculator",
+    storageBadge: "Browser-only storage",
+    editorTitle: "Estimate",
+    newButton: "New",
+    nameLabel: "Plan name",
+    namePlaceholder: "Carrier A 20GB switch",
+    periodLabel: "Comparison period",
+    period12: "12 months",
+    period24: "24 months",
+    period36: "36 months",
+    period48: "48 months",
+    monthlyFeeLabel: "Monthly fee",
+    monthlyDiscountLabel: "Monthly discount",
+    devicePriceLabel: "Device price",
+    deviceDiscountLabel: "Device discount",
+    initialFeesLabel: "Initial fees",
+    exitFeesLabel: "Exit or transfer fees",
+    cashbackLabel: "Points or cashback",
+    tradeInLabel: "Trade-in or resale",
+    notesLabel: "Notes",
+    notesPlaceholder: "Campaign deadline, family discount, caveats",
+    totalLabel: "Total cost",
+    effectiveMonthlyLabel: "Effective monthly",
+    saveButton: "Save",
+    duplicateButton: "Duplicate",
+    resultsTitle: "Comparison",
+    exportButton: "Export",
+    importButton: "Import",
+    tablePlan: "Plan",
+    tablePeriod: "Period",
+    tableTotal: "Total",
+    tableMonthly: "Effective monthly",
+    tableDifference: "Difference",
+    emptyTitle: "Save plans you want to compare",
+    emptyBody:
+      "Add device costs, discounts, and points to rank plans by effective total cost.",
+    clearButton: "Clear browser data",
+    noSaved: "No saved estimates yet.",
+    summary: ({ count, diff }) =>
+      `${count} estimates saved. The gap between the cheapest and highest total is ${diff}.`,
+    noNotes: "No notes",
+    months: ({ months }) => `${months} months`,
+    best: "Best",
+    edit: "Edit",
+    delete: "Delete",
+    copySuffix: " copy",
+    confirmClear: "Clear all estimates saved in this browser?",
+    importError: "Could not import that JSON file.",
+  },
+  ja: {
+    pageTitle: "MNP総額電卓",
+    pageDescription:
+      "日本のMNP・回線乗り換え費用をブラウザ内だけで比較するローカルファースト電卓。",
+    eyebrow: "Local-first estimate tool",
+    appTitle: "MNP総額電卓",
+    storageBadge: "ブラウザ内保存",
+    editorTitle: "見積もり",
+    newButton: "新規",
+    nameLabel: "案名",
+    namePlaceholder: "A社 20GB 乗り換え",
+    periodLabel: "比較月数",
+    period12: "12か月",
+    period24: "24か月",
+    period36: "36か月",
+    period48: "48か月",
+    monthlyFeeLabel: "月額料金",
+    monthlyDiscountLabel: "月額割引",
+    devicePriceLabel: "端末代",
+    deviceDiscountLabel: "端末割引",
+    initialFeesLabel: "初期費用",
+    exitFeesLabel: "解約・転出費用",
+    cashbackLabel: "ポイント還元",
+    tradeInLabel: "下取り・売却見込み",
+    notesLabel: "メモ",
+    notesPlaceholder: "キャンペーン期限、家族割、注意点など",
+    totalLabel: "総額",
+    effectiveMonthlyLabel: "実質月額",
+    saveButton: "保存",
+    duplicateButton: "複製",
+    resultsTitle: "比較",
+    exportButton: "書き出し",
+    importButton: "読み込み",
+    tablePlan: "案",
+    tablePeriod: "月数",
+    tableTotal: "総額",
+    tableMonthly: "実質月額",
+    tableDifference: "差額",
+    emptyTitle: "比較したい案を保存",
+    emptyBody:
+      "端末代、割引、ポイント還元を入れると、期間内の実質総額で並べられます。",
+    clearButton: "保存データを削除",
+    noSaved: "保存された案はまだありません。",
+    summary: ({ count, diff }) =>
+      `${count}件を比較中。最安と最高額の差は${diff}です。`,
+    noNotes: "メモなし",
+    months: ({ months }) => `${months}か月`,
+    best: "最安",
+    edit: "編集",
+    delete: "削除",
+    copySuffix: " コピー",
+    confirmClear: "このブラウザに保存した見積もりを削除しますか？",
+    importError: "JSONファイルを読み込めませんでした。",
+  },
+};
 
 const fields = {
   id: document.querySelector("#estimateId"),
@@ -26,11 +138,14 @@ const duplicateButton = document.querySelector("#duplicateButton");
 const exportButton = document.querySelector("#exportButton");
 const importInput = document.querySelector("#importInput");
 const clearButton = document.querySelector("#clearButton");
+const languageButtons = document.querySelectorAll("[data-language-button]");
 
 let estimates = loadEstimates();
+let currentLanguage = loadLanguage();
 
 function yen(value) {
-  return new Intl.NumberFormat("ja-JP", {
+  const locale = currentLanguage === "ja" ? "ja-JP" : "en-US";
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "JPY",
     maximumFractionDigits: 0,
@@ -42,9 +157,44 @@ function numberValue(input) {
   return Number.isFinite(value) ? Math.max(0, value) : 0;
 }
 
+function newId() {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  return `estimate-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function cleanText(value, maxLength) {
+  return typeof value === "string" ? value.slice(0, maxLength).trim() : "";
+}
+
+function cleanNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.max(0, number) : 0;
+}
+
+function normalizeEstimate(item) {
+  const defaults = readFormDefaults();
+  const periodMonths = cleanNumber(item.periodMonths);
+  return {
+    ...defaults,
+    id: cleanText(item.id, 120) || newId(),
+    name: cleanText(item.name, 48),
+    periodMonths: [12, 24, 36, 48].includes(periodMonths) ? periodMonths : 24,
+    monthlyFee: cleanNumber(item.monthlyFee),
+    monthlyDiscount: cleanNumber(item.monthlyDiscount),
+    devicePrice: cleanNumber(item.devicePrice),
+    deviceDiscount: cleanNumber(item.deviceDiscount),
+    initialFees: cleanNumber(item.initialFees),
+    exitFees: cleanNumber(item.exitFees),
+    cashback: cleanNumber(item.cashback),
+    tradeIn: cleanNumber(item.tradeIn),
+    notes: cleanText(item.notes, 240),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
 function readForm() {
   return {
-    id: fields.id.value || crypto.randomUUID(),
+    id: fields.id.value || newId(),
     name: fields.name.value.trim(),
     periodMonths: numberValue(fields.periodMonths),
     monthlyFee: numberValue(fields.monthlyFee),
@@ -90,6 +240,38 @@ function saveEstimates() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(estimates));
 }
 
+function loadLanguage() {
+  const saved = localStorage.getItem(LANGUAGE_KEY);
+  if (saved === "en" || saved === "ja") return saved;
+  return navigator.language?.toLowerCase().startsWith("ja") ? "ja" : "en";
+}
+
+function t(key, params = {}) {
+  const value = translations[currentLanguage][key] ?? translations.en[key] ?? key;
+  return typeof value === "function" ? value(params) : value;
+}
+
+function applyLanguage() {
+  document.documentElement.lang = currentLanguage;
+  document.title = t("pageTitle");
+  const description = document.querySelector('meta[name="description"]');
+  if (description) description.content = t("pageDescription");
+
+  for (const element of document.querySelectorAll("[data-i18n]")) {
+    element.textContent = t(element.dataset.i18n);
+  }
+
+  for (const element of document.querySelectorAll("[data-i18n-placeholder]")) {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  }
+
+  for (const button of languageButtons) {
+    const isActive = button.dataset.languageButton === currentLanguage;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  }
+}
+
 function setForm(estimate) {
   fields.id.value = estimate?.id || "";
   fields.name.value = estimate?.name || "";
@@ -123,14 +305,15 @@ function render() {
   emptyState.style.display = sorted.length === 0 ? "block" : "none";
 
   if (sorted.length === 0) {
-    summaryText.textContent = "保存された案はまだありません。";
+    summaryText.textContent = t("noSaved");
     return;
   }
 
   const worstTotal = calculate(sorted[sorted.length - 1]).total;
-  summaryText.textContent = `${sorted.length}件を比較中。最安と最高額の差は${yen(
-    worstTotal - bestTotal
-  )}です。`;
+  summaryText.textContent = t("summary", {
+    count: sorted.length,
+    diff: yen(worstTotal - bestTotal),
+  });
 
   for (const estimate of sorted) {
     const result = calculate(estimate);
@@ -141,21 +324,21 @@ function render() {
       <td>
         <div class="row-title">
           <strong>${escapeHtml(estimate.name)}</strong>
-          <span>${escapeHtml(estimate.notes || "メモなし")}</span>
+          <span>${escapeHtml(estimate.notes || t("noNotes"))}</span>
         </div>
       </td>
-      <td>${result.months}か月</td>
+      <td>${t("months", { months: result.months })}</td>
       <td>${yen(result.total)}</td>
       <td>${yen(result.effectiveMonthly)}</td>
-      <td>${diff === 0 ? "最安" : `+${yen(diff)}`}</td>
+      <td>${diff === 0 ? t("best") : `+${yen(diff)}`}</td>
       <td>
         <div class="row-actions">
           <button class="icon-button" type="button" data-action="edit" data-id="${
             estimate.id
-          }">編集</button>
+          }">${t("edit")}</button>
           <button class="icon-button" type="button" data-action="delete" data-id="${
             estimate.id
-          }">削除</button>
+          }">${t("delete")}</button>
         </div>
       </td>
     `;
@@ -196,8 +379,18 @@ resetFormButton.addEventListener("click", () => setForm());
 duplicateButton.addEventListener("click", () => {
   const draft = readForm();
   fields.id.value = "";
-  fields.name.value = draft.name ? `${draft.name} コピー` : "";
+  fields.name.value = draft.name ? `${draft.name}${t("copySuffix")}` : "";
   updatePreview();
+});
+
+languageButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    currentLanguage = button.dataset.languageButton;
+    localStorage.setItem(LANGUAGE_KEY, currentLanguage);
+    applyLanguage();
+    updatePreview();
+    render();
+  });
 });
 
 estimateRows.addEventListener("click", (event) => {
@@ -242,26 +435,27 @@ importInput.addEventListener("change", async () => {
   importInput.value = "";
   if (!file) return;
 
-  const text = await file.text();
-  const parsed = JSON.parse(text);
-  const imported = Array.isArray(parsed) ? parsed : parsed.estimates;
-  if (!Array.isArray(imported)) return;
+  let imported;
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    imported = Array.isArray(parsed) ? parsed : parsed.estimates;
+    if (!Array.isArray(imported)) throw new Error("Invalid import shape");
+  } catch {
+    window.alert(t("importError"));
+    return;
+  }
 
   estimates = imported
     .filter((item) => item && typeof item.name === "string")
-    .map((item) => ({
-      ...readFormDefaults(),
-      ...item,
-      id: item.id || crypto.randomUUID(),
-      updatedAt: new Date().toISOString(),
-    }));
+    .map(normalizeEstimate);
   saveEstimates();
   render();
 });
 
 clearButton.addEventListener("click", () => {
   if (estimates.length === 0) return;
-  const confirmed = window.confirm("このブラウザに保存した見積もりを削除しますか？");
+  const confirmed = window.confirm(t("confirmClear"));
   if (!confirmed) return;
 
   estimates = [];
@@ -272,7 +466,7 @@ clearButton.addEventListener("click", () => {
 
 function readFormDefaults() {
   return {
-    id: crypto.randomUUID(),
+    id: newId(),
     name: "",
     periodMonths: 24,
     monthlyFee: 0,
@@ -288,5 +482,6 @@ function readFormDefaults() {
   };
 }
 
+applyLanguage();
 setForm();
 render();
