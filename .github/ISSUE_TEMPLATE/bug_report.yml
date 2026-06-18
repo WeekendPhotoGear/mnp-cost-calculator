@@ -1,0 +1,60 @@
+name: Bug report
+description: Report a calculation, storage, import/export, or UI problem.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve MNP Cost Calculator. Please avoid including private plan details, account numbers, or other personal information.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the problem and what looked wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the shortest steps that reproduce the issue.
+      placeholder: |
+        1. Open the app
+        2. Enter ...
+        3. Click ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: "Example: Chrome on iPhone, Safari on macOS"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Calculation
+        - Import/export
+        - Saved estimates
+        - Mobile layout
+        - Accessibility
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Add screenshots or extra context if useful. Remove private data before posting.
