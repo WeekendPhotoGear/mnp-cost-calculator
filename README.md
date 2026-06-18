@@ -83,6 +83,13 @@ Clearing site data or browser storage removes saved estimates.
 
 See [PRIVACY.md](PRIVACY.md) for details.
 
+## Feedback and issues
+
+Bug reports and feature requests are tracked in
+[GitHub Issues](https://github.com/WeekendPhotoGear/mnp-cost-calculator/issues).
+Please remove private plan details, account numbers, and personal information
+before posting screenshots or exported estimates.
+
 ## Maintainer workflow
 
 - Changes should keep the app dependency-free unless there is a strong reason.

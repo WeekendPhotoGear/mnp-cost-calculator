@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Privacy and security policy
+    url: https://github.com/WeekendPhotoGear/mnp-cost-calculator/blob/main/SECURITY.md
+    about: Review how this local-first project handles security and vulnerability reports.

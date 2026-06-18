@@ -1,0 +1,50 @@
+name: Feature request
+description: Suggest a focused improvement for the calculator.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please keep feature requests focused and privacy-conscious. The project is local-first and does not use accounts, analytics, or server-side storage.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What mobile-plan comparison problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed improvement
+      description: Describe the smallest useful version of the improvement.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Calculation model
+        - Import/export
+        - Saved estimates
+        - Mobile usability
+        - Accessibility
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy or storage impact
+      description: Note whether this would change localStorage, exports, imports, external requests, or data handling.
+      placeholder: "Example: No new storage or network requests."
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Add examples, screenshots, or links if useful.
