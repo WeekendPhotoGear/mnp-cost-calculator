@@ -27,6 +27,7 @@ plain static files, no account, and no server-side data collection.
 - Compare 12, 24, 36, or 48 month totals.
 - Include monthly fees, monthly discounts, device costs, fees, points, and trade-in.
 - Save multiple estimates in the browser.
+- Load anonymous sample estimates to understand the comparison flow.
 - Switch between English and Japanese UI.
 - Export estimates as JSON or CSV, and import estimates as JSON.
 - Works as a static site by opening `index.html`.

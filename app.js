@@ -45,6 +45,7 @@ const translations = {
     emptyTitle: "Save plans you want to compare",
     emptyBody:
       "Add device costs, discounts, and points to rank plans by effective total cost.",
+    loadSamplesButton: "Load sample estimates",
     clearButton: "Clear browser data",
     noSaved: "No saved estimates yet.",
     summary: ({ count, diff }) =>
@@ -101,6 +102,7 @@ const translations = {
     emptyTitle: "比較したい案を保存",
     emptyBody:
       "端末代、割引、ポイント還元を入れると、期間内の実質総額で並べられます。",
+    loadSamplesButton: "サンプルを読み込む",
     clearButton: "保存データを削除",
     noSaved: "保存された案はまだありません。",
     summary: ({ count, diff }) =>
@@ -143,6 +145,7 @@ const exportJsonButton = document.querySelector("#exportJsonButton");
 const exportCsvButton = document.querySelector("#exportCsvButton");
 const importInput = document.querySelector("#importInput");
 const clearButton = document.querySelector("#clearButton");
+const loadSamplesButton = document.querySelector("#loadSamplesButton");
 const languageButtons = document.querySelectorAll("[data-language-button]");
 const calculator = globalThis.MnpCalculator;
 
@@ -201,6 +204,100 @@ function loadEstimates() {
 
 function saveEstimates() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(estimates));
+}
+
+function sampleEstimates() {
+  const updatedAt = new Date().toISOString();
+  const samples = {
+    en: [
+      {
+        name: "Sample BYOD switch",
+        periodMonths: 24,
+        monthlyFee: 2970,
+        monthlyDiscount: 0,
+        devicePrice: 0,
+        deviceDiscount: 0,
+        initialFees: 3850,
+        exitFees: 0,
+        cashback: 5000,
+        tradeIn: 0,
+        notes: "Sample only. Replace with your actual offer terms.",
+      },
+      {
+        name: "Sample device discount",
+        periodMonths: 24,
+        monthlyFee: 3278,
+        monthlyDiscount: 550,
+        devicePrice: 22000,
+        deviceDiscount: 12000,
+        initialFees: 3850,
+        exitFees: 0,
+        cashback: 10000,
+        tradeIn: 0,
+        notes: "Shows how device discounts affect the total.",
+      },
+      {
+        name: "Sample resale case",
+        periodMonths: 12,
+        monthlyFee: 3980,
+        monthlyDiscount: 0,
+        devicePrice: 44000,
+        deviceDiscount: 16000,
+        initialFees: 3850,
+        exitFees: 0,
+        cashback: 8000,
+        tradeIn: 18000,
+        notes: "Includes an expected trade-in or resale value.",
+      },
+    ],
+    ja: [
+      {
+        name: "サンプル SIMのみ乗り換え",
+        periodMonths: 24,
+        monthlyFee: 2970,
+        monthlyDiscount: 0,
+        devicePrice: 0,
+        deviceDiscount: 0,
+        initialFees: 3850,
+        exitFees: 0,
+        cashback: 5000,
+        tradeIn: 0,
+        notes: "サンプルです。実際の条件に置き換えてください。",
+      },
+      {
+        name: "サンプル 端末割引あり",
+        periodMonths: 24,
+        monthlyFee: 3278,
+        monthlyDiscount: 550,
+        devicePrice: 22000,
+        deviceDiscount: 12000,
+        initialFees: 3850,
+        exitFees: 0,
+        cashback: 10000,
+        tradeIn: 0,
+        notes: "端末割引が総額に与える影響を確認できます。",
+      },
+      {
+        name: "サンプル 売却見込みあり",
+        periodMonths: 12,
+        monthlyFee: 3980,
+        monthlyDiscount: 0,
+        devicePrice: 44000,
+        deviceDiscount: 16000,
+        initialFees: 3850,
+        exitFees: 0,
+        cashback: 8000,
+        tradeIn: 18000,
+        notes: "下取りや売却見込みを含めた例です。",
+      },
+    ],
+  };
+
+  return samples[currentLanguage].map((estimate) => ({
+    ...estimate,
+    id: newId(),
+    updatedAt,
+  }));
 }
 
 function loadLanguage() {
@@ -438,6 +535,13 @@ clearButton.addEventListener("click", () => {
   estimates = [];
   saveEstimates();
   setForm();
+  render();
+});
+
+loadSamplesButton.addEventListener("click", () => {
+  if (estimates.length > 0) return;
+  estimates = sampleEstimates();
+  saveEstimates();
   render();
 });
 

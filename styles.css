@@ -399,6 +399,10 @@ tbody tr.best-row {
   color: var(--muted);
 }
 
+.empty-state button {
+  margin-top: 16px;
+}
+
 .danger-zone {
   display: flex;
   justify-content: flex-end;
