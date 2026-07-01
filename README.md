@@ -102,6 +102,10 @@ before posting screenshots or exported estimates.
 
 See [ROADMAP.md](ROADMAP.md).
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
 ## License
 
 MIT
